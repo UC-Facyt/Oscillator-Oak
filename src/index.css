@@ -1,0 +1,12 @@
+html,
+body {
+	background: #282B30;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    color: #E6E6E6;
+}
+
+#p-slider {
+	border: none;
+}

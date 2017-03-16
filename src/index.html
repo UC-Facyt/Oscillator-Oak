@@ -1,0 +1,123 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Oscillator</title>
+		<link rel="stylesheet" type="text/css" href="../node_modules/materialize-css/bin/materialize.css">
+		<link rel="stylesheet" type="text/css" href="index.css">
+	</head>
+	<body>
+		<body class="valign-wrapper">
+			<div class="container valign">
+
+				<div class="row">
+
+					<form class="col s12">
+						<div class="row valign-wrapper">
+							<div class="input-field col s9">
+								<input id="binary" type="text" value="">
+								<label for="frecuency">Binary</label>
+							</div>
+
+							<div class="col s3 valign center-align">
+								<a id="send-btn" class="waves-effect waves-light btn">Send!</a>
+							</div>
+
+						</div>
+					</form>
+
+				</div>
+
+				<div class="row">
+
+					<form class="col s12">
+						<div class="row valign-wrapper">
+
+							<!--
+							<div class="input-field col s5">
+								<input id="frecuency" type="text" value="440">
+								<label for="frecuency">Frecuency (Hz)</label>
+							</div>
+							-->
+
+							<div class="col s12">
+								<p class="range-field">
+									<input type="range" id="p-slider" min="50" max="5000" value="1000" />
+							    </p>
+							</div>
+
+						</div>
+					</form>
+
+				</div>
+			</div>
+
+		</body>
+		<script type="text/javascript" src="../node_modules/hammerjs/hammer.min.js"></script>
+		<script type="text/javascript" src="../node_modules/materialize-css/bin/materialize.js"></script>
+		<script>
+
+			window.AudioContext = window.AudioContext;
+
+			const data = $('#binary');
+			const send = $('#send-btn');
+			const pSlider = $('#p-slider');
+
+			let period = 1000;
+
+			const audioCtx = new AudioContext();
+			let oscillator;
+
+			const setFreq = (f) => oscillator.frequency.value = +f;
+
+			function resetOscillator() {
+
+				console.log(typeof oscillator);
+
+				if (typeof oscillator !== 'undefined')
+					oscillator.stop();
+
+				oscillator = audioCtx.createOscillator();
+				oscillator.type = 'square';
+				setFreq(0);
+				oscillator.connect(audioCtx.destination);
+			};
+
+			function setPeriod(p) {
+				period = p;
+			};
+
+			function playBinary(bin) {
+
+				if (bin.length < 1) {
+					oscillator.stop();
+					return;
+				}
+
+				let bit = bin.charAt(0);
+				let res = bin.slice(1);
+
+				switch (bit) {
+					case '0': setFreq(100); break;
+					case '1': setFreq(440); break;
+					default:  setFreq(0); break;
+				}
+
+				setTimeout(() => playBinary(res), period);
+			};
+
+			send.on('click', () => {
+				let bin = data.val();
+				resetOscillator()
+				oscillator.start();
+				playBinary(bin);
+			});
+
+			pSlider.on('input', () => {
+				let p = pSlider.val();
+				setPeriod(p);
+			});
+
+		</script>
+	</body>
+</html>
